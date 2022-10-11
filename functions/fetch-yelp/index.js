@@ -1,12 +1,18 @@
 const fetch = require('node-fetch');
 require('dotenv').config({ path: `.env.development.local` });
 
-exports.handler = async (event) => {
+const handler = async (event) => {
   const zip = event.queryStringParameters.zip;
+  const search = event.queryStringParameters.search;
   // add code here to fetch data from yelp API
   try {
     const response = await fetch(
-      `https://api.yelp.com/v3/businesses/search?categories=restaurants&locations=${zip}`,
+      `https://api.yelp.com/v3/businesses/search?categories=restaurants&location=${zip}&term=${search}`,
+
+      //everything after the ? is setting a param for the user to access
+      //before the = is the param from the API and after is what we set to the user
+      // example, were setting locations to the zip the user types in
+      // console.log('response', response),
       {
         headers: {
           Authorization: `Bearer ${process.env.REACT_APP_YELP_API_KEY}`,
@@ -22,7 +28,7 @@ exports.handler = async (event) => {
     };
   } catch (e) {
     // eslint-disable-next-line no-console
-    console.log(e.message);
+    console.error(e);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'failed to fetch data' }),
@@ -31,5 +37,4 @@ exports.handler = async (event) => {
   // be sure to include the parameters from event.queryStringParameters
 };
 
-// module.exports = { handler };
-// don't need to export if line 4 specifies export?
+module.exports = { handler };

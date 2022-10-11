@@ -6,7 +6,8 @@ import { fetchBusinesses } from './services/yelp';
 function App() {
   const [businesses, setBusinesses] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [zip, setZip] = useState('78745');
+  const [search, setSearch] = useState('');
   // TODO -- add state for zip / search and add event listeners to the inputs
 
   useEffect(() => {
@@ -19,6 +20,10 @@ function App() {
   }, []);
 
   // TODO -- add event for button click to handle calling fetchBusinesses with zip / search
+  const handleSearch = async () => {
+    const data = await fetchBusinesses(zip, search);
+    setBusinesses(data);
+  };
 
   return (
     <div className="App">
@@ -26,13 +31,13 @@ function App() {
       <div className="query-form">
         <div className="form-control">
           <label>Zip:</label>
-          <input type="text" placeholder="zip" />
+          <input type="text" placeholder="zip" onChange={(e) => setZip(e.target.value)} />
         </div>
         <div className="form-control">
           <label>Query:</label>
-          <input type="text" placeholder="Search..." />
+          <input type="text" placeholder="Search..." onChange={(e) => setSearch(e.target.value)} />
         </div>
-        <button>Search</button>
+        <button onClick={handleSearch}>Search</button>
       </div>
       {loading && <div className="loader"></div>}
       {!loading && businesses.map((b) => <RestaurantListItem key={b.id} {...b} />)}
